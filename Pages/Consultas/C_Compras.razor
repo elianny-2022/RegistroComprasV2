@@ -1,0 +1,94 @@
+@page "/Compras"
+@inject ComprasBLL comprasBLL
+
+<EditForm Model="this"> 
+
+    <div class="card" style="box-shadow: 8px 8px rgba(0, 0, 0, 0.26);">
+
+        <div class="card-header">
+            <h4 style="text-align: center;">Consulta de compra</h4>
+        </div>
+        
+      
+        <div class="card-body">
+            <input type="date" @bind="fecha">
+            <input type="date" @bind="fecha1">
+             <button @onclick="BuscarFecha"
+                    class="btn btn-outline-dark" > <i class="oi oi-magnifying-glass"/> Buscar </button>
+                
+                </div>
+        </div>
+        
+         
+    
+    <table class="table table-light" style="box-shadow: 1px 6px rgba(0, 0, 0, 0.2);">
+        <thead class="thead">
+            <tr class="table">
+                <th>CompraId</th>
+                <th>Fecha</th>
+                <th>Suplidor</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @foreach (var compra in comprasList)
+            {
+                <tr>
+                    <td>@compra.CompraId</td> 
+                    <td>@compra.Fecha</td>
+                    <td>@compra.Suplidor</td>
+                    <td>@compra.Total </td> 
+                    @* <td><a class="btn btn-sm btn-outline-primary oi oi-eye" href="Compra/@compra.CompraId"> </a> </td>*@
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+     
+     @*Total Registro*@
+            <div class="row">
+                <div class="col">
+                    <label>Total de Registro</label>
+                    <div class="input-group mb-3">
+                   <InputNumber class="Readonly" @bind-Value="TotalRegistro"/>
+                   
+                </div>
+            </div>
+           
+     @*Total Consulta*@
+           <div class="col-3">
+                    <label>Total de Compras</label>
+                   <InputNumber class="Readonly" @bind-Value="TotalCompras"/>
+                </div>
+            </div>
+</EditForm>
+
+@code {
+    public List<Compras> comprasList { get; set; } = new List<Compras>();
+    public DateTime fecha {get; set;} =  DateTime.Now;
+    public DateTime fecha1 { get; set; }= DateTime.Now;
+    public double  TotalRegistro { get; set; }
+    public double TotalCompras { get; set; }
+
+    void Buscar()
+    {
+        comprasList = comprasBLL.GetList();
+       
+        
+    }
+    void BuscarFecha()
+    {
+
+        if(fecha != null || fecha1!= null)
+        {
+            comprasList = comprasBLL.BuscarFecha(fecha, fecha1);
+             TotalRegistro = comprasList.Count();
+             TotalCompras = comprasList.Sum(c => c.Total);
+        }
+        else{
+            Console.WriteLine("No se encontro la fecha");
+        }
+    }
+}
